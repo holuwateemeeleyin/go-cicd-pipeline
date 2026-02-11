@@ -1,0 +1,30 @@
+name: Go Precision Pipeline
+
+# Trigger the workflow on every push to the main branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest # This is the Linux VM GitHub gives you
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Run Unit Tests
+      # This is why we fixed that test earlier! 
+      # If this fails, the whole pipeline stops here.
+      run: go test -v ./...
+
+    - name: Build Docker Image
+      # This mimics exactly what you did locally
+      run: docker build -t go-cicd-app:latest .
